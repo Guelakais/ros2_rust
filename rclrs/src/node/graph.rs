@@ -420,17 +420,17 @@ fn convert_names_and_types(
 ) -> HashMap<String, Vec<String>> {
     let mut names_and_types: TopicNamesAndTypes = HashMap::new();
 
+    // SAFETY: Check if the names.size is valid
+    if !unsafe {rcl_names_and_types.names.size > isize::MAX as usize} {
+        return Err("Invalid names.size value");
+    }
+    
     // SAFETY: Safe if the rcl_names_and_types arg has been initialized by the caller
     let name_slice = unsafe {
-        if rcl_names_and_types.names.size <= isize::MAX as usize {
-            slice::from_raw_parts(
-                rcl_names_and_types.names.data,
-                rcl_names_and_types.names.size,
-            )
-        }
-        else {
-                panic!("Invalid names.size value");
-            }
+        slice::from_raw_parts(
+            rcl_names_and_types.names.data,
+            rcl_names_and_types.names.size,
+        )
     };
 
     for (idx, name) in name_slice.iter().enumerate() {
