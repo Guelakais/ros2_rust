@@ -422,7 +422,7 @@ fn convert_names_and_types(
 
     // SAFETY: Safe if the rcl_names_and_types arg has been initialized by the caller
     let name_slice = unsafe {
-        if (rcl_names_and_types.names.size > isize::MAX as usize) {
+        if rcl_names_and_types.names.size > isize::MAX as usize {
             slice::from_raw_parts(
                 rcl_names_and_types.names.data,
                 rcl_names_and_types.names.size,
