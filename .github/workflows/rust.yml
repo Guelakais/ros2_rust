@@ -51,9 +51,13 @@ jobs:
         use-ros2-testing: ${{ matrix.ros_distribution == 'rolling' }}
 
     - name: Setup Rust
-      uses: dtolnay/rust-toolchain@1.74.0
+      uses: dtolnay/rust-toolchain@1.78.0
       with:
         components: clippy, rustfmt
+    - name: Set Rust backtrace
+      run: |
+        echo "RUST_BACKTRACE=1" >> $GITHUB_ENV
+
     - name: Set Rust backtrace
       run: |
         echo "RUST_BACKTRACE=1" >> $GITHUB_ENV
