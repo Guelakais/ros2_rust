@@ -55,6 +55,10 @@ jobs:
       with:
         components: clippy, rustfmt
 
+    - name: Set Rust backtrace
+      run: |
+        echo "RUST_BACKTRACE=1" >> $GITHUB_ENV
+
     - name: Install colcon-cargo and colcon-ros-cargo
       run: |
         sudo pip3 install git+https://github.com/colcon/colcon-cargo.git
