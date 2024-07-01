@@ -24,7 +24,7 @@ cfg-if = "1.0.0"
 futures = "0.3.30"
 
 # Needed for dynamic messages
-libloading = { version = "0.8", optional = true }
+libloading = { version = "0.8.4", optional = true }
 
 # Needed for the Message trait, among others
 rosidl_runtime_rs = "0.4"
