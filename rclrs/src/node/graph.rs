@@ -421,7 +421,7 @@ fn convert_names_and_types(
     let mut names_and_types: TopicNamesAndTypes = HashMap::new();
 
     // SAFETY: Check if the names.size is valid
-    if !unsafe {rcl_names_and_types.names.size > isize::MAX as usize} {
+    if !unsafe { rcl_names_and_types.names.size > isize::MAX as usize } {
         return Err("Invalid names.size value");
     }
     
