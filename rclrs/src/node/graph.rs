@@ -426,9 +426,10 @@ fn convert_names_and_types(
             slice::from_raw_parts(
                 rcl_names_and_types.names.data,
                 rcl_names_and_types.names.size,
-            )}
-            else{
-                panic!("Invalid names.size value")
+            )
+        }
+        else {
+                panic!("Invalid names.size value");
             }
     };
 
