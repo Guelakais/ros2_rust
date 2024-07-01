@@ -6,6 +6,8 @@
 // Added to avoid clippy complaining about u128 types not being FFI safe
 // Caused by https://github.com/ros2/ros2/issues/1374 in iron and newer
 // See https://github.com/ros2-rust/ros2_rust/issues/320
+#![allow(improper_ctypes)]
+#![allow(improper_ctypes_definitions)]
 #![allow(clippy::all)]
 #![allow(missing_docs)]
 
