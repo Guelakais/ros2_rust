@@ -25,7 +25,7 @@ generate_docs = []
 
 [dev-dependencies]
 # Needed for writing property tests
-quickcheck = "1"
+quickcheck = "=0.6.2"
 # Needed for testing serde support
 serde_json = "1"
 
