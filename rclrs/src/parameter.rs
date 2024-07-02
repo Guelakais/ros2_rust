@@ -410,7 +410,8 @@ impl<T: ParameterVariant> Drop for ReadOnlyParameter<T> {
                 Ok(guard) => guard,
                 Err(TryLockError::Poisoned(err)) => {
                     // Handle the poisoned lock error
-                    match err.into_inner() {
+                    let poisoned_result = err.into_inner();
+                    match poisoned_result {
                         Ok(guard) => {
                             eprintln!("Poisoned lock error: {:?}", guard);
                             return;
