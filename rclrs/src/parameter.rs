@@ -413,19 +413,16 @@ impl<T: ParameterVariant> Drop for ReadOnlyParameter<T> {
                     let poisoned_result = err.into_inner();
                     match poisoned_result {
                         Ok(guard) => {
-                            eprintln!("Poisoned lock error: {:?}", guard);
-                            return;
+                            panic!("Poisoned lock error: {:?}", guard);
                         }
                         Err(err) => {
-                            eprintln!("Poisoned lock error: {:?}", err);
-                            return;
+                            panic!("Poisoned lock error: {:?}", err);
                         }
                     }
                 }
                 Err(TryLockError::WouldBlock) => {
                     // Handle the case where the lock is already held by another thread
-                    eprintln!("Lock is already held by another thread");
-                    return;
+                    panic!("Lock is already held by another thread");
                 }
             };
 
