@@ -409,16 +409,7 @@ impl<T: ParameterVariant> Drop for ReadOnlyParameter<T> {
             let mut map_guard = match map.try_lock() {
                 Ok(guard) => guard,
                 Err(TryLockError::Poisoned(err)) => {
-                    // Handle the poisoned lock error
-                    let poisoned_result = err.into_inner();
-                    match poisoned_result {
-                        Ok(guard) => {
-                            panic!("Poisoned lock error: {:?}", guard);
-                        }
-                        Err(err) => {
-                            panic!("Poisoned lock error: {:?}", err);
-                        }
-                    }
+                    panic!("poisoned! {}", err);
                 }
                 Err(TryLockError::WouldBlock) => {
                     // Handle the case where the lock is already held by another thread
