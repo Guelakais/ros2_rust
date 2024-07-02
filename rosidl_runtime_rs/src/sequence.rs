@@ -266,7 +266,7 @@ where
         unsafe {
             let ptr = self.data as *const T;
             let align = std::mem::align_of::<T>();
-            if !ptr.is_null() && ptr.is_aligned(align) && self.size <= isize::MAX as usize == 0 {
+            if !ptr.is_null() && ptr.is_aligned(align) && self.size <= isize::MAX as usize {
                 std::slice::from_raw_parts(self.data, self.size)
             } else {
                 panic!("Sequence data pointer is null or not properly aligned");
