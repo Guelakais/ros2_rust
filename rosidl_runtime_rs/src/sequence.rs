@@ -263,7 +263,15 @@ where
     pub fn as_slice(&self) -> &[T] {
         // SAFETY: self.data points to self.size consecutive, initialized elements and
         // isn't modified externally.
-        unsafe { std::slice::from_raw_parts(self.data, self.size) }
+        unsafe {
+            let ptr = self.data as *const T;
+            let align = std::mem::align_of::<T>();
+            if !ptr.is_null() && ptr.is_aligned(align) && self.size <= isize::MAX as usize == 0 {
+                std::slice::from_raw_parts(self.data, self.size)
+            } else {
+                panic!("Sequence data pointer is null or not properly aligned");
+            }
+        }
     }
 
     /// Extracts a mutable slice containing the entire sequence.
