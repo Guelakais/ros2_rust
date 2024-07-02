@@ -392,19 +392,6 @@ pub struct ReadOnlyParameter<T: ParameterVariant> {
     _marker: PhantomData<T>,
 }
 
-impl<T: ParameterVariant> ReadOnlyParameter<T> {
-    pub fn new(name: Arc<str>, value: ParameterValue, map: Arc<Mutex<ParameterMap>>) -> Self {
-        let mut map_guard = map.lock().unwrap();
-        map_guard.storage.insert(name.clone(), value.clone());
-        ReadOnlyParameter {
-            name,
-            value,
-            map: Arc::downgrade(&map),
-            _marker: PhantomData,
-        }
-    }
-}
-
 impl<T: ParameterVariant + Debug> Debug for ReadOnlyParameter<T> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ReadOnlyParameter")
@@ -417,6 +404,20 @@ impl<T: ParameterVariant + Debug> Debug for ReadOnlyParameter<T> {
 impl<T: ParameterVariant> Drop for ReadOnlyParameter<T> {
     fn drop(&mut self) {
         // Clear the entry from the parameter map
+        if let Some(map) = self.map.upgrade() {
+            // Acquire the lock on the ParameterMap
+            let mut map_guard = match map.try_lock() {
+                Ok(guard) => guard,
+                Err(poisoned) => {
+                    // Handle the poisoned lock error
+                    eprintln!("Poisoned lock error: {:?}", poisoned.into_inner());
+                    return;
+                }
+            };
+
+            // Remove the entry from the ParameterMap
+            map_guard.storage.remove(&self.name);
+        }
     }
 }
 
