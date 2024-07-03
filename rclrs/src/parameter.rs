@@ -409,7 +409,7 @@ impl<T: ParameterVariant> Drop for ReadOnlyParameter<T> {
             let mut map_guard = match map.try_lock() {
                 Ok(guard) => guard,
                 Err(err) => panic!("poisoned! {}", err);
-            }
+            };
 
             // Remove the entry from the ParameterMap
             map_guard.storage.remove(&self.name);
