@@ -419,38 +419,42 @@ fn convert_names_and_types(
     rcl_names_and_types: rmw_names_and_types_t,
 ) -> HashMap<String, Vec<String>> {
     let mut names_and_types: TopicNamesAndTypes = HashMap::new();
-
-    // SAFETY: Safe if the rcl_names_and_types arg has been initialized by the caller
-    let name_slice = unsafe {
-        slice::from_raw_parts(
-            rcl_names_and_types.names.data,
-            rcl_names_and_types.names.size,
-        )
-    };
-
-    for (idx, name) in name_slice.iter().enumerate() {
-        // SAFETY: The slice contains valid C string pointers if it was populated by the caller
-        let name: String = unsafe {
-            let cstr = CStr::from_ptr(*name);
-            cstr.to_string_lossy().into_owned()
+    // Check if the names.data pointer is not null
+    if rcl_names_and_types.names.data.is_null() {
+        panic!("Invalid names.data pointer");
+    } else {
+        // SAFETY: Safe if the rcl_names_and_types arg has been initialized by the caller
+        let name_slice = unsafe {
+            slice::from_raw_parts(
+                rcl_names_and_types.names.data,
+                rcl_names_and_types.names.size,
+            )
         };
 
-        // SAFETY: Safe as long as rcl_names_and_types was populated by the caller
-        let types: Vec<String> = unsafe {
-            let p = rcl_names_and_types.types.add(idx);
-            slice::from_raw_parts((*p).data, (*p).size)
-                .iter()
-                .map(|s| {
-                    let cstr = CStr::from_ptr(*s);
-                    cstr.to_string_lossy().into_owned()
-                })
-                .collect()
-        };
+        for (idx, name) in name_slice.iter().enumerate() {
+            // SAFETY: The slice contains valid C string pointers if it was populated by the caller
+            let name: String = unsafe {
+                let cstr = CStr::from_ptr(*name);
+                cstr.to_string_lossy().into_owned()
+            };
 
-        names_and_types.insert(name, types);
+            // SAFETY: Safe as long as rcl_names_and_types was populated by the caller
+            let types: Vec<String> = unsafe {
+                let p = rcl_names_and_types.types.add(idx);
+                slice::from_raw_parts((*p).data, (*p).size)
+                    .iter()
+                    .map(|s| {
+                        let cstr = CStr::from_ptr(*s);
+                        cstr.to_string_lossy().into_owned()
+                    })
+                    .collect()
+            };
+
+            names_and_types.insert(name, types);
+        }
+
+        names_and_types
     }
-
-    names_and_types
 }
 
 #[cfg(test)]
