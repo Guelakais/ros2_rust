@@ -405,8 +405,14 @@ impl<T: ParameterVariant> Drop for ReadOnlyParameter<T> {
     fn drop(&mut self) {
         // Clear the entry from the parameter map
         if let Some(map) = self.map.upgrade() {
-            let storage = &mut map.lock().unwrap().storage;
-            storage.remove(&self.name);
+            // Acquire the lock on the ParameterMap
+            let mut map_guard = match map.try_lock() {
+                Ok(guard) => guard,
+                Err(err) => panic!("poisoned! {}", err),
+            };
+
+            // Remove the entry from the ParameterMap
+            map_guard.storage.remove(&self.name);
         }
     }
 }
