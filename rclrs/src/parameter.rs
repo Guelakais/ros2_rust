@@ -15,7 +15,7 @@ use std::{
     collections::{btree_map::Entry, BTreeMap},
     fmt::Debug,
     marker::PhantomData,
-    sync::{Arc, Mutex, RwLock, TryLockError, Weak},
+    sync::{Arc, Mutex, RwLock, Weak},
 };
 
 // This module implements the core logic of parameters in rclrs.
