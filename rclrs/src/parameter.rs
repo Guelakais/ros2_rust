@@ -13,7 +13,7 @@ use crate::vendor::rcl_interfaces::msg::rmw::{ParameterType, ParameterValue as R
 use crate::{call_string_getter_with_rcl_node, rcl_bindings::*, Node, RclrsError};
 use std::{
     collections::{btree_map::Entry, BTreeMap},
-    fmt::Debug,
+    fmt::{self, Debug, Display},
     marker::PhantomData,
     sync::{Arc, Mutex, RwLock, Weak},
 };
@@ -643,6 +643,34 @@ pub enum DeclarationError {
     /// An invalid range was provided to a parameter declaration (i.e. lower bound > higher bound).
     InvalidRange,
 }
+impl Display for DeclarationError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DeclarationError::AlreadyDeclared => write!(
+                f,
+                "Parameter was already declared and a new declaration was attempted"
+            ),
+            DeclarationError::NoValueAvailable => write!(
+                f,
+                "Parameter was declared as non optional but no value was available"
+            ),
+            DeclarationError::OverrideValueTypeMismatch => {
+                write!(f, "The override value that was provided has the wrong type")
+            }
+            DeclarationError::PriorValueTypeMismatch => write!(
+                f,
+                "The value that the parameter was already set to has the wrong type"
+            ),
+            DeclarationError::InitialValueOutOfRange => {
+                write!(f, "The initial value that was selected is out of range")
+            }
+            DeclarationError::InvalidRange => write!(
+                f,
+                "An invalid range was provided to a parameter declaration"
+            ),
+        }
+    }
+}
 
 impl<'a> Parameters<'a> {
     /// Tries to read a parameter of the requested type.
@@ -668,9 +696,9 @@ impl<'a> Parameters<'a> {
     /// Returns:
     /// * `Ok(())` if setting was successful.
     /// * [`Err(DeclarationError::TypeMismatch)`] if the type of the requested value is different
-    /// from the parameter's type.
+    ///   from the parameter's type.
     /// * [`Err(DeclarationError::OutOfRange)`] if the requested value is out of the parameter's
-    /// range.
+    ///   range.
     /// * [`Err(DeclarationError::ReadOnly)`] if the parameter is read only.
     pub fn set<T: ParameterVariant>(
         &self,
